@@ -1,11 +1,11 @@
-import express from 'express'
+import express, { response } from 'express'
 import { PORT, MongoDBURL } from './config.js'
-import { MongoClient, ServerApiVersion } from "mongodb"
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb"
 const app = express()
 
 app.use(express.json())
 
-const client = new MongoClient(MongoDBURL,  {
+const client = new MongoClient(MongoDBURL, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -25,12 +25,34 @@ app.get('/', (req, res) => {
 })
 
 app.get('/shop', (req, res) => {
-    return res.status(200).send("<a href='/'> Home</a>")
+    myBooks.find().toArray()
+        .then(response => {
+            // return res.status(200).send(`<a href='/'> Book: ${JSON.stringify(response)}</a>`)
+            return res.status(201).send(response)
+            // console.log(response)
+        })
+        .catch(error => console.log(error))
+    // return res.status(200).send("<a href='/'> Home</a>")
 })
 
 app.get('/shop/:id', (req, res) => {
-    const data = req.params
-    return res.status(200).send(`<a href='/'> Book: ${data.id}</a>`)
+    myBooks.findOne({ _id: new ObjectId(req.params.id) })
+        .then(response => {
+            // return res.status(200).send(`<a href='/'> Book: ${JSON.stringify(response)}</a>`)
+            return res.status(201).send(response)
+            // console.log(response)
+        })
+        .catch(error => console.log(error))
+})
+
+app.get('/shop/remove/:id', (req, res) => {
+    myBooks.deleteOne({ _id: new ObjectId(req.params.id) })
+        .then(response => {
+            // return res.status(200).send(`<a href='/'> Book: ${JSON.stringify(response)}</a>`)
+            return res.status(201).send(response)
+            // console.log(response)
+        })
+        .catch(error => console.log(error))
 })
 
 app.post('/savebook', (req, res) => {
@@ -42,8 +64,22 @@ app.post('/savebook', (req, res) => {
     if (!data.price)
         return res.status(400).send("No price found.")
 
-    myBooks.insertOne(data, (error, response)=>{
-        if(error){
+    myBooks.insertOne(data, (error, response) => {
+        if (error) {
+            console.log("An error occurred!")
+            return res.sendStatus(500)
+        }
+    })
+    return res.status(201).send(JSON.stringify(data))
+})
+
+app.post('/shop/update/:id', (req, res) => {
+    const data = req.body
+    if (!data.title && !data.author && !data.price)
+        return res.status(400).send("No data received.")
+
+    myBooks.updateOne({ _id: new ObjectId(req.params.id) }, {$set: data}, (error, response) => {
+        if (error) {
             console.log("An error occurred!")
             return res.sendStatus(500)
         }
