@@ -1,11 +1,11 @@
-import express from 'express'
+import express, { response } from 'express'
 import { PORT, MongoDBURL } from './config.js'
-import { MongoClient, ServerApiVersion } from "mongodb"
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb"
 const app = express()
 
 app.use(express.json())
 
-const client = new MongoClient(MongoDBURL,  {
+const client = new MongoClient(MongoDBURL, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -25,15 +25,35 @@ app.get('/', (req, res) => {
 })
 
 app.get('/shop', (req, res) => {
-    return res.status(200).send("<a href='/'> Home</a>")
+    // route show all books
+    myBooks.find().toArray()
+        .then(response => {
+            // console.log(response)
+            res.status(200).send(response)
+        })
+        .catch(err => console.log(err))
+    // return res.status(200).send("<a href='/'> Home</a>")
 })
 
 app.get('/shop/:id', (req, res) => {
+    // route show a specific book
     const data = req.params
-    return res.status(200).send(`<a href='/'> Book: ${data.id}</a>`)
+
+    const filter = {
+        "_id": new ObjectId(data.id)
+    }
+
+    myBooks.findOne(filter)
+        .then(response => {
+            // console.log(response)
+            res.status(200).send(response)
+        })
+        .catch(err => console.log(err))
+    // return res.status(200).send(`<a href='/'> Book: ${data.id}</a>`)
 })
 
-app.post('/savebook', (req, res) => {
+app.post('/admin/savebook', (req, res) => {
+    // Route adds a new book
     const data = req.body
     if (!data.title)
         return res.status(400).send("No title found.")
@@ -42,8 +62,8 @@ app.post('/savebook', (req, res) => {
     if (!data.price)
         return res.status(400).send("No price found.")
 
-    myBooks.insertOne(data, (error, response)=>{
-        if(error){
+    myBooks.insertOne(data, (error, response) => {
+        if (error) {
             console.log("An error occurred!")
             return res.sendStatus(500)
         }
@@ -51,4 +71,38 @@ app.post('/savebook', (req, res) => {
     return res.status(201).send(JSON.stringify(data))
 })
 
-// Added from my PC
+app.delete('/admin/remove/:id', (req, res) => {
+    const data = req.params
+
+    const filter = {
+        "_id": new ObjectId(data.id)
+    }
+
+    myBooks.deleteOne(filter)
+        .then(response => {
+            // console.log(response)
+            return res.status(200).send(response)
+        })
+        .catch(err => console.log(err))
+})
+
+app.put('/admin/update/:id/', (req, res) => {
+    const data = req.params
+    const docData = req.body
+    
+    const filter = {
+        "_id": new ObjectId(data.id)
+    }
+
+    const updDoc = {
+        $set: {
+           ...docData //docData.price, docData.cover
+        }
+    }
+
+    myBooks.updateOne(filter, updDoc)
+    .then(response=>{
+        res.status(200).send(response)
+    })
+    .catch(err=>console.log(err))
+})
