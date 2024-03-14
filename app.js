@@ -1,8 +1,10 @@
-import express, { response } from 'express'
+import express from 'express'
+import cors from 'cors'
 import { PORT, MongoDBURL } from './config.js'
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb"
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 const client = new MongoClient(MongoDBURL, {
@@ -21,7 +23,7 @@ app.listen(PORT, () => {
 })
 
 app.get('/', (req, res) => {
-    return res.status(200).send("<h1>Hello there, how are you?!</h1>")
+    return res.status(200).send({response:"Welcome to the bookshop!"})
 })
 
 app.get('/shop', (req, res) => {
