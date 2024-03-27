@@ -1,9 +1,11 @@
-import express, { response } from 'express'
+import express from 'express'
+import cors from 'cors'
 import { PORT, MongoDBURL } from './config.js'
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb"
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 const client = new MongoClient(MongoDBURL, {
     serverApi: {
@@ -63,10 +65,10 @@ app.post('/admin/savebook', (req, res) => {
         return res.status(400).send("No price found.")
 
     myBooks.insertOne(data)
-    .then(response=>{
-        return res.status(201).send(JSON.stringify(response))
-    })
-    .catch(err=>console.log(err))
+        .then(response => {
+            return res.status(201).send(JSON.stringify(response))
+        })
+        .catch(err => console.log(err))
 })
 
 app.delete('/admin/remove/:id', (req, res) => {
@@ -87,20 +89,20 @@ app.delete('/admin/remove/:id', (req, res) => {
 app.put('/admin/update/:id/', (req, res) => {
     const data = req.params
     const docData = req.body
-    
+
     const filter = {
         "_id": new ObjectId(data.id)
     }
 
     const updDoc = {
         $set: {
-           ...docData //docData.price, docData.cover
+            ...docData //docData.price, docData.cover
         }
     }
 
     myBooks.updateOne(filter, updDoc)
-    .then(response=>{
-        res.status(200).send(response)
-    })
-    .catch(err=>console.log(err))
+        .then(response => {
+            res.status(200).send(response)
+        })
+        .catch(err => console.log(err))
 })
