@@ -3,17 +3,17 @@ import { useState, useEffect } from 'react'
 const ShowAll = () => {
     const [allBooks, setAllBooks] = useState([])
     useEffect(() => {
-            const headers = {
+            const options = {
                 "content-type": "application/json"
             }
-            fetch('http://localhost:3000/shop', { headers })
+            fetch('http://localhost:3000/shop', { options })
                 .then(response => response.json())
                 .then(response => {
                     console.warn(response)
                     const theBooks = response.map(book => {
                         return (
                             <li key={book._id}>
-                                {book.title}
+                                {book.title} by {book.author}
                             </li>
                         )
                     })

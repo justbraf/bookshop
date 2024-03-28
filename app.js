@@ -57,18 +57,29 @@ app.get('/shop/:id', (req, res) => {
 app.post('/admin/savebook', (req, res) => {
     // Route adds a new book
     const data = req.body
-    if (!data.title)
-        return res.status(400).send("No title found.")
-    if (!data.author)
-        return res.status(400).send("No author found.")
-    if (!data.price)
-        return res.status(400).send("No price found.")
+    let message = {}
 
-    myBooks.insertOne(data)
-        .then(response => {
-            return res.status(201).send(JSON.stringify(response))
-        })
-        .catch(err => console.log(err))
+    if (!data.title)
+        // return res.status(400).send("No title found.")
+        message.error ? message.error += "No title found. " : message.error = "No title found. "
+    if (!data.author)
+        // return res.status(400).send("No author found.")
+        message.error ? message.error += "No author found. " : message.error = "No author found. "
+    if (!data.price)
+        // return res.status(400).send("No price found.")
+        message.error ? message.error += "No price found. " : message.error = "No price found. "
+
+    if (!message.error) {
+        myBooks.insertOne(data)
+            .then(response => {
+                // console.log(response)
+                return res.status(201).send({ "message": "addedd successfully" })
+                // return res.status(201).send(JSON.stringify(response))
+            })
+            .catch(err => console.log(err))
+    }
+    else
+        return res.status(400).send(message)
 })
 
 app.delete('/admin/remove/:id', (req, res) => {
