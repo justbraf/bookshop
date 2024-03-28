@@ -3,24 +3,25 @@ import { useState, useEffect } from 'react'
 const ShowAll = () => {
     const [allBooks, setAllBooks] = useState([])
     useEffect(() => {
-        const headers = {
-            "content-type": "application/json"
-        }
-        fetch('http://localhost:3000/shop', { headers })
-            .then(response => response.json())
-            .then(response => {
-                console.warn(response)
-                const theBooks = response.map(book => {
-                    return (
-                        <li key={book._id}>
-                            {book.title}
-                        </li>
-                    )
+            const headers = {
+                "content-type": "application/json"
+            }
+            fetch('http://localhost:3000/shop', { headers })
+                .then(response => response.json())
+                .then(response => {
+                    console.warn(response)
+                    const theBooks = response.map(book => {
+                        return (
+                            <li key={book._id}>
+                                {book.title}
+                            </li>
+                        )
+                    })
+                    console.debug(theBooks)
+                    // setBooksLoaded(true)
+                    setAllBooks(theBooks)
                 })
-                console.debug(theBooks)
-                setAllBooks(theBooks)
-            })
-            .catch(err => console.error(err))
+                .catch(err => console.error(err))
     }, [])
 
     return (
@@ -36,5 +37,6 @@ const ShowAll = () => {
         </>
     )
 }
+
 
 export default ShowAll
