@@ -2,7 +2,7 @@ const AddBook = () => {
 
     return (
         <div className="flex justify-center m-2">
-            <div className="bg-blue-50 basis-1/2 p-2">
+            <div className="bg-blue-50 lg:basis-1/2 sm:p-6 lg:p-2">
                 <p className="text-xl text-center mb-3">Add a book</p>
                 <form className="max-w-md mx-auto">
                     <div className="relative z-0 w-full mb-5 group">
