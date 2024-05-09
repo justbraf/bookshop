@@ -1,3 +1,5 @@
+import RemoveBook from "./RemoveBook"
+
 const ShowBook = ({book}) => {
     return (
         <div className="min-w-80 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mx-0.5 basis-1/4">
@@ -12,6 +14,7 @@ const ShowBook = ({book}) => {
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                 </svg>
             </a>
+            <RemoveBook id={book._id}/>
         </div>
     )
 }
