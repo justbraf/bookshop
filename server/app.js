@@ -96,6 +96,8 @@ app.put('/admin/update/:id/', (req, res) => {
     const filter = {
         "_id": new ObjectId(data.id)
     }
+    //  Removes _id key
+    delete docData._id
 
     const updDoc = {
         $set: {
@@ -105,7 +107,12 @@ app.put('/admin/update/:id/', (req, res) => {
 
     myBooks.updateOne(filter, updDoc)
         .then(response => {
-            res.status(200).send(response)
+            let msg = {}
+            if (!response.matchedCount || !response.modifiedCount)
+                msg = { message: "Oops! Something went worng!." }
+            else
+                msg = { message: "Update successful." }
+            res.status(200).send(msg)
         })
         .catch(err => console.log(err))
 })
